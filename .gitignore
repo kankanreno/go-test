@@ -1,0 +1,7 @@
+*.log
+.idea
+*.swp
+.DS_Store
+
+_out
+conf.yaml
