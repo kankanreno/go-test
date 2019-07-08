@@ -1,0 +1,109 @@
+### Overview
+Package exec runs external commands. It wraps os.StartProcess to make it easier to remap stdin and stdout, connect I/O with pipes, and do other adjustments.
+
+### Variables
+ErrNotFound is the error resulting if a path search failed to find an executable file.
+
+var ErrNotFound = errors.New("executable file not found in $PATH")
+
+### func LookPath
+func LookPath(file string) (string, error)
+LookPath searches for an executable named file in the directories named by the PATH environment variable. If file contains a slash, it is tried directly and the PATH is not consulted. The result may be an absolute path or a path relative to the current directory.
+
+path, err := exec.LookPath("fortune")
+
+### type Cmd
+Cmd represents an external command being prepared or run.
+A Cmd cannot be reused after calling its Run, Output or CombinedOutput methods.
+
+type Cmd struct {
+	Path string
+	Args []string
+	Env []string
+	Dir string
+	Stdin io.Reader
+	Stdout io.Writer
+	Stderr io.Writer
+	ExtraFiles []*os.File
+	SysProcAttr *syscall.SysProcAttr
+	Process *os.Process
+	ProcessState *os.ProcessState
+}
+
+### func Command
+func Command(name string, arg ...string) *Cmd
+
+Command returns the Cmd struct to execute the named program with the given arguments.
+It sets only the Path and Args in the returned structure.
+If name contains no path separators, Command uses LookPath to resolve name to a complete path if possible.
+Otherwise it uses name directly as Path.
+
+The returned Cmd's Args field is constructed from the command name followed by the elements of arg, so arg should not include the command name itself. For example, Command("echo", "hello"). Args[0] is always name, not the possibly resolved Path.
+
+cmd := exec.Command("tr", "a-z", "A-Z")
+cmd.Stdin = strings.NewReader("some input")
+var out bytes.Buffer
+cmd.Stdout = &out
+err := cmd.Run()
+if err != nil {
+	log.Fatal(..)
+}
+fmt.Printf("in all..")
+
+cmd := exec.Command("prog")
+cmd.Env = append(os.Environ(), "FOO=duplicate_value", "FOO=actual_value",)
+if err := cmd.Run(); err != nil {log.Fatal(err)}
+
+### func CommandContext
+func CommandContext(ctx context.Context, name string, arg ...string) *Cmd
+
+CommandContext is like Command but includes a context.
+
+The provided context is used to kill the process (by calling os.Process.Kill) if the context becomes done before the command completes on its own.
+
+ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+defer cancel()
+
+if err := exec.CommandContext(ctx, "sleep", "5").Run(); err != nil {
+	// This will fail after 100 milliseconds. The 5 second sleep
+	// will be interrupted.
+}
+
+### func (*Cmd) CombinedOutput
+func (c *Cmd) CombinedOutput() ([]byte, error)
+
+CombinedOutput runs the command and returns its combined standard output and standard error.
+
+### func (*Cmd) Output
+func (c *Cmdj) Output() ([[]byte, error)
+
+Output runs the command and returns its standard output. Any returned error will usually be of type *ExitError. If c.Stderr was nil, Output populates ExitError.Stderr.
+
+### func (*Cmd) Run
+func (c *Cmd) Run() error
+
+Run starts the specified command and waits for it to complete.
+
+The returned error is nil if the command runs, has no problems copying stdin, stdout, and stderr, and exits with a zero exit status.
+
+If the command starts but does not complete successfully, the error is of type *ExitError. Other error types may bre returned for other situations.
+
+If the calling goruntine has locked the operating system thread with runtime.LockOSThread and modified any inheritable OS-level thread state (for example, Linux or Plan 9 name spaces), the new process will inherit the caller's thread state.
+
+### func (*Cmd) Start
+func (c *Cmd) Start() error
+
+Start starts the specified command but does not wait for it to complete.
+
+The Wait method will return the exit code and release associated resources once the command exits.
+
+
+### func (*Cmd) Wait
+func (c *Cmd) Wait() error
+
+Wait waits for the command to exit and waits for any copying to stdin or copying from stdout or stderr to complete.
+
+The command must have been started by Start.
+
+Wait releases any resources associated with the Cmd.
+
