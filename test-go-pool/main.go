@@ -37,7 +37,7 @@ func main() {
 	}
 
 	// Close input channel since no more input are being sent to input channel
-	//close(input)
+	close(input)
 
 	// Wait for all goroutines to finish processing
 	wg.Wait()
