@@ -45,3 +45,7 @@ func main() {
 
 	http.ListenAndServe(":8080", nil)
 }
+
+// https://www.imooc.com/video/17603		close 改进
+// https://godoc.org/github.com/gorilla/websocket 		官方文档
+// https://blog.csdn.net/wangshubo1989/article/details/79140278		Go实战--Gorilla web toolkit使用之gorilla/websocket
