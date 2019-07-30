@@ -3,27 +3,27 @@ package main
 import "fmt"
 
 func main() {
-	fmt.Printf("test1 = %d\n", test1())
-	fmt.Printf("test2 = %d\n", test2())
+	fmt.Printf("有名返回 = %d\n", test1())
+	fmt.Printf("匿名返回 = %d\n", test2())
+}
+
+// 有名返回
+func test1() (foo int) {
+	defer func () {
+		foo++
+	}()
+
+	return
 }
 
 // 匿名返回
-func test1() int {
+func test2() int {
     foo := 0
 
     defer func () {
         foo++
-        fmt.Printf("foo = %d\n", foo)
+        fmt.Printf("匿名返回 defer 中，foo = %d\n", foo)
     }()
 
 	return foo
-}
-
-// 有名返回
-func test2() (foo int) {
-    defer func () {
-        foo++
-    }()
-
-	return
 }

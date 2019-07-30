@@ -23,17 +23,18 @@ func workder(ctx context.Context, wg *sync.WaitGroup, i int) error {
 }
 
 func main() {
-    ctx, cancel := context.WithTimeout(context.Background(), 1 * time.Second)
-    ctx2 := context.WithValue(ctx, "kkk", "vvvvvvvv")
-    fmt.Println("context.Background(): ", context.Background())
+    ctx := context.Background()
+    ctx1, cancel := context.WithTimeout(ctx, 1 * time.Second)
+    ctx2 := context.WithValue(ctx1, "kkk", "vvvvvvvv")
     fmt.Println("ctx: ", ctx)
+    fmt.Println("ctx1: ", ctx1)
     fmt.Println("ctx2: ", ctx2)
 
     var wg sync.WaitGroup
 
     for i := 0; i < 10; i++ {
         wg.Add(1)
-        go workder(ctx, &wg, i)
+        go workder(ctx2, &wg, i)
     }
 
     time.Sleep(3 * time.Second)
