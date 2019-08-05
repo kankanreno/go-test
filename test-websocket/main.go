@@ -6,14 +6,14 @@ import (
 	"net/http"
 )
 
-var upgrader = websocket.Upgrader{
+var upGrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		return true
 	},
 }
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
-	conn, err := upgrader.Upgrade(w, r, nil)
+	conn, err := upGrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Error(err)
 		return
