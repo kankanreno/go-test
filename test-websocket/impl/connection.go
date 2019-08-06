@@ -1,42 +1,53 @@
 package impl
 
 import (
+	"errors"
 	"github.com/gorilla/websocket"
 	"sync"
 )
 
 type Connection struct {
-	wsConn *websocket.Conn
-	inChan chan []byte
-	outChan chan []byte
+	wsConn    *websocket.Conn
+	inChan    chan []byte
+	outChan   chan []byte
 	closeChan chan []byte
-	mutex sync.Mutex
-	isClosed bool
+	mutex     sync.Mutex
+	isClosed  bool
 }
 
 func InitConnection(wsConn *websocket.Conn) (conn *Connection, err error) {
 	conn = &Connection{
-		wsConn: wsConn,
-		inChan: make(chan []byte, 1000),
+		wsConn:  wsConn,
+		inChan:  make(chan []byte, 1000),
 		outChan: make(chan []byte, 1000),
 	}
 
 	// 读 chan 协程
-	conn.readLoop()
+	go conn.readLoop()
 
 	// 写 chan 协程
-	conn.writeLoop()
+	go conn.writeLoop()
 
 	return
 }
 
+// 从 inChan 中读数据
 func (conn *Connection) ReadMessage() (data []byte, err error) {
-	data = <-conn.inChan
+	select {
+	case data = <-conn.inChan:
+	case <-conn.closeChan:
+		err = errors.New("connection is closed")
+	}
 	return
 }
 
+// 向 onChan 中写数据
 func (conn *Connection) WriteMessage(data []byte) (err error) {
-	conn.outChan <- data
+	select {
+	case conn.outChan <- data:
+	case <-conn.closeChan:
+		err = errors.New("connection is closed")
+	}
 	return
 }
 
@@ -54,21 +65,21 @@ func (conn *Connection) Close() {
 	conn.mutex.Unlock()
 }
 
+// readLoop 循环从客户端接收数据并写入到 inChan
 func (conn *Connection) readLoop() {
 	var data []byte
 	var err error
 
 	for {
 		if _, data, err = conn.wsConn.ReadMessage(); err != nil {
-			// todo: goto err
-			return
+			goto ERR
 		}
 
 		// 当 writeLoop 中出错关闭 conn，这里会因 conn.inChan 满等待读出而仍处于阻塞状态...
 		//conn.inChan <- data
 		select {
 		case conn.inChan <- data:
-		case <- conn.closeChan:
+		case <-conn.closeChan:
 			goto ERR
 		}
 	}
@@ -77,6 +88,7 @@ ERR:
 	conn.Close()
 }
 
+// writeLoop 监听 outChan 并向客户端发送数据
 func (conn *Connection) writeLoop() {
 	var data []byte
 	var err error
@@ -85,8 +97,8 @@ func (conn *Connection) writeLoop() {
 		// 当 readLoop 中出错关闭 conn，这里会因 conn.outChan 空等待写入而仍处于阻塞状态...
 		//data = <- conn.outChan
 		select {
-		case data = <- conn.outChan:
-		case <- conn.closeChan:
+		case data = <-conn.outChan:
+		case <-conn.closeChan:
 			goto ERR
 		}
 
