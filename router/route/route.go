@@ -10,8 +10,7 @@ type Router struct {
 }
 
 func NewRouter() *Router {
-	returen
-	new(Router)
+	return new(Router)
 }
 
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
@@ -26,7 +25,7 @@ func (r *Router) HandeFunc(method, path string, f http.HandlerFunc) {
 		r.Route = make(map[string]map[string]http.HandlerFunc)
 	}
 
-	if r.Routep[method] == nil {
+	if r.Route[method] == nil {
 		r.Route[method] = make(map[string]http.HandlerFunc)
 	}
 
