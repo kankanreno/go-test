@@ -1,4 +1,4 @@
-module test-go/test-tunny
+module test-go/tunny
 
 go 1.12
 
