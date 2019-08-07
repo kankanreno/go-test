@@ -10,16 +10,17 @@ type Connection struct {
 	wsConn    *websocket.Conn
 	inChan    chan []byte
 	outChan   chan []byte
-	closeChan chan []byte
+	closeChan chan byte
 	mutex     sync.Mutex
 	isClosed  bool
 }
 
 func InitConnection(wsConn *websocket.Conn) (conn *Connection, err error) {
 	conn = &Connection{
-		wsConn:  wsConn,
-		inChan:  make(chan []byte, 1000),
-		outChan: make(chan []byte, 1000),
+		wsConn:    wsConn,
+		inChan:    make(chan []byte, 1000),
+		outChan:   make(chan []byte, 1000),
+		closeChan: make(chan byte, 1),
 	}
 
 	// 读 chan 协程
@@ -41,7 +42,7 @@ func (conn *Connection) ReadMessage() (data []byte, err error) {
 	return
 }
 
-// 向 onChan 中写数据
+// 向 outChan 中写数据
 func (conn *Connection) WriteMessage(data []byte) (err error) {
 	select {
 	case conn.outChan <- data:
@@ -65,7 +66,7 @@ func (conn *Connection) Close() {
 	conn.mutex.Unlock()
 }
 
-// readLoop 循环从客户端接收数据并写入到 inChan
+// 循环从客户端接收数据并写入到 inChan
 func (conn *Connection) readLoop() {
 	var data []byte
 	var err error
@@ -88,7 +89,7 @@ ERR:
 	conn.Close()
 }
 
-// writeLoop 监听 outChan 并向客户端发送数据
+// 循环监听 outChan 并向客户端发送数据
 func (conn *Connection) writeLoop() {
 	var data []byte
 	var err error
