@@ -3,9 +3,18 @@ package main
 import "fmt"
 
 func main() {
-	var w Wheel
-	w.X = 8
+	//var w Wheel
+	//w.X = 8
 	//w.Point.X = 9
+
+	w := &Wheel{
+		Circle{
+			Point{
+				X: 88,
+				Y: 99,
+			},
+		},
+	}
 
 
 	w.print()

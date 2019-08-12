@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 func main() {
 	//var slice []int
@@ -17,4 +20,15 @@ func main() {
 	bar = foo
 	fmt.Printf("foo, %+v\n", foo)
 	fmt.Printf("bar, %+v\n", bar)
+
+	str := ""
+	for i := 0; i < 40; i++ {
+		go func(str string) {
+			for j := 0; j < 100000; j++ {
+				str += "0123456789"
+			}
+		}(str)
+	}
+
+	time.Sleep(10000 * time.Hour)
 }
