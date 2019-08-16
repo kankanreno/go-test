@@ -21,13 +21,11 @@ func main() {
 	fmt.Printf("foo, %+v\n", foo)
 	fmt.Printf("bar, %+v\n", bar)
 
-	str := ""
-	for i := 0; i < 40; i++ {
-		go func(str string) {
-			for j := 0; j < 100000; j++ {
-				str += "0123456789"
-			}
-		}(str)
+	var m []byte
+	for i := 0; i < 15; i++ {
+		m = append(m, make([]byte, 1024 * 1024 * 10)...)
+		time.Sleep(1 * time.Second)
+		fmt.Printf("loop: %d, sizeof(m): %dMB\n", i, len(m) / (1024 * 1024))
 	}
 
 	time.Sleep(10000 * time.Hour)
