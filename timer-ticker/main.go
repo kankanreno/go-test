@@ -43,6 +43,7 @@ func main() {
 	defer housekeepingTicker.Stop()
 
 	for {
+		fmt.Println("for")
 		syncLoopIteration(syncTicker.C, housekeepingTicker.C)
 	}
 }

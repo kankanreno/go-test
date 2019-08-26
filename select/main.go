@@ -64,12 +64,12 @@ func main() {
 	shouldQuit := make(chan struct{})
 
 	go func() {
-		time.Sleep(1 * time.Second)
+		time.Sleep(3 * time.Second)
 		close(shouldQuit)
 	}()
 
-	select {
-	case <-shouldQuit:
-		fmt.Println("quited!")
+    select {
+    case <-shouldQuit:
+        fmt.Println("quited!")
 	}
 }
