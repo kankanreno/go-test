@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/go-cas/cas"
+	_ "go-test/beego/routers"
 	"net/http"
 	"net/url"
-	_ "test-beego/routers"
 )
 
 const casURL = "http://localhost:8888/cas/"

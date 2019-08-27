@@ -1,4 +1,4 @@
-module test-cobra
+module cobra
 
 go 1.12
 

@@ -3,8 +3,8 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"go-test/pipeline/pipeline"
 	"os"
-	"test-go/test-pipeline/pipeline"
 )
 
 func merge() {

@@ -1,4 +1,4 @@
-module test-go/test-beego
+module go-test/beego
 
 go 1.12
 

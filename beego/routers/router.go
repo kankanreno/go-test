@@ -2,7 +2,7 @@ package routers
 
 import (
 	"github.com/astaxie/beego"
-	"test-beego/controllers"
+	"go-test/beego/controllers"
 )
 
 const URL_LOGIN = "http://localhost:8888/cas/"
