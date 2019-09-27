@@ -6,6 +6,7 @@ require (
 	github.com/coreos/etcd v3.3.13+incompatible // indirect
 	github.com/gogo/protobuf v1.2.1 // indirect
 	github.com/golang/protobuf v1.3.2 // indirect
+	github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271 // indirect
 	golang.org/x/net v0.0.0-20190813141303-74dc4d7220e7 // indirect
 	google.golang.org/grpc v1.23.0 // indirect
 )

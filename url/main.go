@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/url"
+	"strings"
 )
 
 func main() {
@@ -24,4 +25,10 @@ func main() {
 	fmt.Println("u.Fragment:", u.Fragment)
 
 	fmt.Println("u.RequestURI():", u.RequestURI())
+
+	URL := "/api/v1/apps/1/deployments/4"
+	foo := strings.Split(URL, "/")
+	fmt.Println("foo:", foo)
+	fmt.Println("apps:", foo[4])
+	fmt.Println("deployments:", foo[6])
 }
