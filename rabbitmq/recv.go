@@ -28,7 +28,7 @@ func main() {
 		panic(err)
 	}
 
-	//forever := make(chan bool)
+	//forever := make(chan struct{})
 	go func() {
 		for delivery := range deliveryChan {
 			fmt.Printf("Received a message: %s\n", delivery.Body)
