@@ -8,8 +8,8 @@ import (
 )
 
 func main() {
-	//u, err := url.Parse("http://localhost:8000/rest/v1/issues_page?order=desc&foo=bar")
-	u, err := url.Parse("http://localhost:8000/rest/v1/issues_status_count?")
+	u, err := url.Parse("http://localhost:8000/rest/v1/issues_page?order=desc&foo=bar")
+	//u, err := url.Parse("http://localhost:8000/rest/v1/issues_status_count?")
 	if err != nil {
 		log.Fatal(err)
 	}
