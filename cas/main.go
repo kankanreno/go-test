@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/go-cas/cas"
 	log "github.com/sirupsen/logrus"
 	"html/template"
@@ -78,7 +79,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:    ":9999",
-		Handler: middlewareCas(middlewareLogger(m)),
+		Handler: middlewareCas(m),
 	}
 
 	//if err := server.ListenAndServeTLS("server.crt", "server.key"); err != nil {
@@ -89,35 +90,49 @@ func main() {
 	log.Info("=== Shutting down")
 }
 
-// TODO: 改进：针对特定路由设置 cas client
 func middlewareCas(next http.Handler) http.Handler {
-	url, _ := url.Parse(casURL)
-	client := cas.NewClient(&cas.Options{URL: url})
-	return client.Handle(next)
+	//url, _ := url.Parse(casURL)
+	//client := cas.NewClient(&cas.Options{URL: url})
+	//return client.Handle(next)
 
-	//return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	//	log.Info("Executing middleware middlewareCas Start...")
-	//
-	//	if r.URL.Path == "/foo" {
-	//		url, _ := url.Parse(casURL)
-	//		client := cas.NewClient(&cas.Options{URL: url})
-	//		client.Handle(next).ServeHTTP(w, r)
-	//	} else {
-	//		next.ServeHTTP(w, r)
-	//	}
-	//
-	//	log.Println("Executing middleware middlewareCas End...")
-	//})
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Info("Executing middleware middlewareCas Start...")
+
+		if r.URL.Path == "/foo" || r.URL.Path == "/logout" || r.URL.Path == "/currentuser" {
+			url, _ := url.Parse(casURL)
+			client := cas.NewClient(&cas.Options{URL: url})
+			client.Handle(casHandler(next)).ServeHTTP(w, r)
+		} else {
+			next.ServeHTTP(w, r)
+		}
+
+		log.Println("Executing middleware middlewareCas End...")
+	})
 }
 
-// TODO: 路由判断
-func middlewareLogger(next http.Handler) http.Handler {
+func casHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Info("Executing middleware middlewareLogger Start...")
+		log.Info("Executing middleware casHandler Start...")
 
-		if !cas.IsAuthenticated(r) && r.URL.Path != "/bar" {
+		// 验证登录
+		if !cas.IsAuthenticated(r) && true {		// TODO: true 表示考虑到简单及刚进入前端一定会发送的请求
+			// return HTML
 			cas.RedirectToLogin(w, r)
 			return
+
+			//// return json
+			//w.Header().Set("Access-Control-Allow-Credentials", "true")
+			//w.Header().Set("Access-Control-Allow-Headers", "Origin,Authorization,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Content-Type")
+			//w.Header().Set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
+			//w.Header().Set("Access-Control-Allow-Origin", "*")
+			//w.Header().Set("Access-Control-Expose-Headers", "Content-Length,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Content-Type")
+			//w.Header().Set("Content-Type", "application/json")
+			//w.WriteHeader(200)
+			//
+			//str := fmt.Sprintf(`{"code": -1, "message": "not logged in!"}`)
+			//log.Info("=== Cas Middleware, not logged in! will return: ", str)
+			//w.Write([]byte(str))
+			//return
 		}
 
 		if r.URL.Path == "/logout" {
@@ -125,9 +140,27 @@ func middlewareLogger(next http.Handler) http.Handler {
 			return
 		}
 
+		// 处理 /currentuser 请求，并将 token 的获取也统一到该请求中
+		if r.URL.Path == "/currentuser" {
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
+			w.Header().Set("Access-Control-Allow-Headers", "Origin,Authorization,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Content-Type")
+			w.Header().Set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.Header().Set("Access-Control-Expose-Headers", "Content-Length,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Content-Type")
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(200)
+
+			apiToken := "ttt"
+			log.Info("cas.Username(r): ", cas.Username(r))
+			jsonStr := fmt.Sprintf(`{"username": "%s"}`, cas.Username(r))
+			str := fmt.Sprintf(`{"code": 0, "message": "%s", "data": %s}`, apiToken, jsonStr)
+			w.Write([]byte(str))
+			return
+		}
+
 		next.ServeHTTP(w, r)
 
-		log.Println("Executing middleware middlewareLogger End...")
+		log.Println("Executing middleware casHandler End...")
 	})
 }
 
@@ -143,6 +176,7 @@ func fooHandlerFunc(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Info("cas.Username(r): ", cas.Username(r))
 	binding := &templateBinding{
 		Username:   cas.Username(r),
 		Attributes: cas.Attributes(r),
