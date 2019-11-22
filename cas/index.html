@@ -1,0 +1,43 @@
+<html>
+<head>
+<title>Golang Chat</title>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script type="text/javascript">
+$(function() {
+    $.ajax({
+        url: "http://localhost:9999/currentuser",
+        type: 'GET',
+        success: function(data) {
+            console.log(data);
+            if (data.code !== 0) {
+                window.location.href = `http://localhost:8888/cas/login?service=http://localhost:9999/redirect_to?front_path=${window.location.href}`;
+                // return;
+            }
+
+            $('#foo').html(data.data.username);
+        },
+        error: function(err) {
+            console.error(err)
+        }
+    })
+});
+</script>
+<style type="text/css">
+html {
+    overflow: hidden;
+}
+body {
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background: gray;
+}
+</style>
+</head>
+<body>
+<div id="foo"></div>
+<a href="/logout?url=http://localhost:9999">Logout</a>
+</body>
+</html>

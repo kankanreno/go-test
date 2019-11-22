@@ -96,9 +96,9 @@ func middlewareCas(next http.Handler) http.Handler {
 	//return client.Handle(next)
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Info("Executing middleware middlewareCas Start...")
+		log.Info("=== Executing middleware middlewareCas Start...")
 
-		if r.URL.Path == "/foo" || r.URL.Path == "/logout" || r.URL.Path == "/currentuser" {
+		if r.URL.Path != "/noneedlogin" {
 			url, _ := url.Parse(casURL)
 			client := cas.NewClient(&cas.Options{URL: url})
 			client.Handle(casHandler(next)).ServeHTTP(w, r)
@@ -106,33 +106,43 @@ func middlewareCas(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 		}
 
-		log.Println("Executing middleware middlewareCas End...")
+		log.Println("=== Executing middleware middlewareCas End...")
 	})
 }
 
 func casHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Info("Executing middleware casHandler Start...")
+		log.Info("=== Executing middleware casHandler Start...")
+		log.Infof("request: %+v", r)
 
 		// 验证登录
-		if !cas.IsAuthenticated(r) && true {		// TODO: true 表示考虑到简单及刚进入前端一定会发送的请求
+		if !cas.IsAuthenticated(r) && r.URL.Path == "/currentuser" {
+		//if !cas.IsAuthenticated(r) {
 			// return HTML
-			cas.RedirectToLogin(w, r)
-			return
+			//cas.RedirectToLogin(w, r)
+			//return
 
 			//// return json
-			//w.Header().Set("Access-Control-Allow-Credentials", "true")
-			//w.Header().Set("Access-Control-Allow-Headers", "Origin,Authorization,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Content-Type")
-			//w.Header().Set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
-			//w.Header().Set("Access-Control-Allow-Origin", "*")
-			//w.Header().Set("Access-Control-Expose-Headers", "Content-Length,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Content-Type")
-			//w.Header().Set("Content-Type", "application/json")
-			//w.WriteHeader(200)
-			//
-			//str := fmt.Sprintf(`{"code": -1, "message": "not logged in!"}`)
-			//log.Info("=== Cas Middleware, not logged in! will return: ", str)
-			//w.Write([]byte(str))
-			//return
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
+			w.Header().Set("Access-Control-Allow-Headers", "Origin,Authorization,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Content-Type")
+			w.Header().Set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.Header().Set("Access-Control-Expose-Headers", "Content-Length,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Content-Type")
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(200)
+
+			str := fmt.Sprintf(`{"code": -1, "message": "not logged in!"}`)
+			log.Infof("=== Cas Middleware, not logged in! will return: %s", str)
+			w.Write([]byte(str))
+			return
+		}
+
+		// return to frontend, request come from cas server
+		if r.URL.Path == "/redirect_to" {
+			frontPath := r.URL.Query().Get("front_path")
+			log.Infof("=== Cas Middleware, logged! will redirect to frontPath: %s", frontPath)
+			http.Redirect(w, r, frontPath, http.StatusFound)
+			return
 		}
 
 		if r.URL.Path == "/logout" {
@@ -151,7 +161,7 @@ func casHandler(next http.Handler) http.Handler {
 			w.WriteHeader(200)
 
 			apiToken := "ttt"
-			log.Info("cas.Username(r): ", cas.Username(r))
+			log.Infof("cas.Username(r): %s", cas.Username(r))
 			jsonStr := fmt.Sprintf(`{"username": "%s"}`, cas.Username(r))
 			str := fmt.Sprintf(`{"code": 0, "message": "%s", "data": %s}`, apiToken, jsonStr)
 			w.Write([]byte(str))
@@ -160,7 +170,7 @@ func casHandler(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r)
 
-		log.Println("Executing middleware casHandler End...")
+		log.Println("=== Executing middleware casHandler End...")
 	})
 }
 
@@ -198,7 +208,7 @@ const index_html = `<!DOCTYPE html>
     <title>Welcome {{.Username}}</title>
   </head>
   <body>
-    <h1>Welcome {{.Username}} <a href="/logout">Logout</a></h1>
+    <h1>Welcome {{.Username}} <a href="/logout?url=http://localhost:9999">Logout</a></h1>
     <p>Your attributes are:</p>
     <ul>{{range $key, $values := .Attributes}}
       <li>{{$len := len $values}}{{$key}}:{{if gt $len 1}}
