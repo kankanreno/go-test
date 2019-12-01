@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
-    "github.com/wesovilabs/koazee"
+    "github.com/thoas/go-funk"
 )
 
 func main() {
-    var numbers = []int{1, 5, 4, 3, 2, 7, 1, 8, 2, 3}
-    fmt.Println(stream.Drop(5).Do().Out().Val())
+	r := funk.Filter([]int{1, 2, 3, 4}, func(x int) bool {
+		return x != 2
+	}) // []int{2, 4}
+    fmt.Println(r)
 }
