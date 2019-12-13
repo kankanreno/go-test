@@ -5,3 +5,5 @@
 
 _out
 conf.yaml
+go.mod
+go.sum
