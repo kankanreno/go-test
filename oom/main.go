@@ -1,26 +1,27 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	_ "net/http/pprof"
+	"time"
 )
 
 func main() {
 	go func() {
-		log.Println(http.ListenAndServe(":9999", nil))
+		log.Println(http.ListenAndServe(":6060", nil))
 	}()
 
-	//http.HandleFunc("/ping", handlerData)
+	//http.HandleFunc("/", handlerData)
 	//http.ListenAndServe(":8080", nil)
-
-	mux := http.NewServeMux()
-	mux.HandleFunc("/ping", handlerData)
-	http.ListenAndServe(":8080", mux)
+	tick := time.Tick(time.Second / 100)
+	var buf []byte
+	for range tick {
+		buf = append(buf, make([]byte, 1024*1024)...)
+	}
 }
 
-func handlerData(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "hello world")
-	//w.Write([]byte("Hello world!\n"))
-}
+//func handlerData(w http.ResponseWriter, r *http.Request) {
+//	fmt.Fprintln(w, "hello world")
+//	//w.Write([]byte("Hello world!\n"))
+//}
