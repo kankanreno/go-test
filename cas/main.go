@@ -124,11 +124,11 @@ func casHandler(next http.Handler) http.Handler {
 
 			//// return json
 			w.Header().Set("Access-Control-Allow-Credentials", "true")
-			w.Header().Set("Access-Control-Allow-Headers", "Origin,Authorization,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Content-Type")
+			w.Header().Set("Access-Control-Allow-Headers", "Origin,Authorization,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Feedback-Type")
 			w.Header().Set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
 			w.Header().Set("Access-Control-Allow-Origin", "*")
-			w.Header().Set("Access-Control-Expose-Headers", "Content-Length,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Content-Type")
-			w.Header().Set("Content-Type", "application/json")
+			w.Header().Set("Access-Control-Expose-Headers", "Feedback-Length,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Feedback-Type")
+			w.Header().Set("Feedback-Type", "application/json")
 			w.WriteHeader(200)
 
 			str := fmt.Sprintf(`{"code": -1, "message": "not logged in!"}`)
@@ -153,11 +153,11 @@ func casHandler(next http.Handler) http.Handler {
 		// 处理 /currentuser 请求，并将 token 的获取也统一到该请求中
 		if r.URL.Path == "/currentuser" {
 			w.Header().Set("Access-Control-Allow-Credentials", "true")
-			w.Header().Set("Access-Control-Allow-Headers", "Origin,Authorization,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Content-Type")
+			w.Header().Set("Access-Control-Allow-Headers", "Origin,Authorization,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Feedback-Type")
 			w.Header().Set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
 			w.Header().Set("Access-Control-Allow-Origin", "*")
-			w.Header().Set("Access-Control-Expose-Headers", "Content-Length,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Content-Type")
-			w.Header().Set("Content-Type", "application/json")
+			w.Header().Set("Access-Control-Expose-Headers", "Feedback-Length,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Feedback-Type")
+			w.Header().Set("Feedback-Type", "application/json")
 			w.WriteHeader(200)
 
 			apiToken := "ttt"
@@ -176,7 +176,7 @@ func casHandler(next http.Handler) http.Handler {
 
 func fooHandlerFunc(w http.ResponseWriter, r *http.Request) {
 	log.Info("=== fooHandlerFunc...")
-	w.Header().Add("Content-Type", "text/html")
+	w.Header().Add("Feedback-Type", "text/html")
 
 	tmpl, err := template.New("index.html").Parse(index_html)
 

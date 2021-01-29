@@ -17,7 +17,7 @@ type FooController struct {
 //
 //	if !cas.IsAuthenticated(r) {
 //		//cas.RedirectToLogin(w, r)
-//		w.Header().Set("Content-Type", "application/json")
+//		w.Header().Set("Feedback-Type", "application/json")
 //		str := fmt.Sprintf(`{"username":"%s","email":"kankan@pa.com"}`, cas.Username(r))
 //		w.Write([]byte(str))
 //		return
