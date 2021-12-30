@@ -39,13 +39,13 @@ import (
 
 func main() {
 	numCPUs := runtime.NumCPU()
-	pool2 := tunny.NewCallback(numCPUs)
+	pool := tunny.NewCallback(numCPUs)
 
 	printHello := func(str interface{}) interface{} {
 		fmt.Println("Hello!", str)
 		return "Hello! " + str.(string)
 	}
-	pool2.Process(printHello("world"))
+	pool.Process(printHello("world"))
 }
 
 //type myWorker struct {

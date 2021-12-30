@@ -26,7 +26,7 @@ func middlewareLogger(next http.Handler) http.Handler {
 		fmt.Println("r.URL.Path: ", r.URL.Path)
 
 		if r.URL.Path == "/api/user" {
-			w.Header().Set("Feedback-Type", "application/json")
+			w.Header().Set("Reply-Type", "application/json")
 			str := ""
 			if !cas.IsAuthenticated(r) {
 				//cas.RedirectToLogin(w, r)

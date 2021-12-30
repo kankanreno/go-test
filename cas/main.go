@@ -8,6 +8,7 @@ import (
 	"html/template"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 const casURL = "http://localhost:8888/cas/"
@@ -21,12 +22,12 @@ func main() {
 	log.Info("=== Starting up")
 
 	//// === BASE ===
-	//m := http.NewServeMux()
-	//m.HandleFunc("/foo", handlerFunc)
+	//mux := http.NewServeMux()
+	//mux.HandleFunc("/foo", handlerFunc)
 	//
 	//server := &http.Server{
 	//	Addr:    ":9999",
-	//	Handler: m,
+	//	Handler: mux,
 	//}
 	//
 	////if err := server.ListenAndServeTLS("server.crt", "server.key"); err != nil {
@@ -35,36 +36,36 @@ func main() {
 	//}
 
 	//// === Wrap Sever ===
-	//m := http.NewServeMux()
-	//m.HandleFunc("/", handlerFunc)
-	////m.Handle("/foo", middlewareLogger(http.HandlerFunc(fooHandlerFunc)))
+	//mux := http.NewServeMux()
+	//mux.HandleFunc("/", handlerFunc)
+	////mux.Handle("/foo", middlewareLogger(http.HandlerFunc(fooHandlerFunc)))
 	//
-	////if err := http.ListenAndServeTLS(":443", "server.crt", "server.key", m); err != nil {
-	//if err := http.ListenAndServe(":9999", m); err != nil {
+	////if err := http.ListenAndServeTLS(":443", "server.crt", "server.key", mux); err != nil {
+	//if err := http.ListenAndServe(":9999", mux); err != nil {
 	//	log.Fatal("ListenAndServe: ", err)
 	//}
 
-	//// === SIMPLE ===
-	//http.Handle("/", client.HandleFunc(handlerFunc))
-	////if err := http.ListenAndServeTLS(":443", "server.crt", "server.key", m); err != nil {
-	//
-	//if err := http.ListenAndServe(":9999", nil); err != nil {
-	//	log.Fatal("ListenAndServe: ", err)
-	//}
+	// === SIMPLE ===
+	http.HandleFunc("/", middlewareSimple(handlerFunc))
+	//if err := http.ListenAndServeTLS(":443", "server.crt", "server.key", mux); err != nil {
+
+	if err := http.ListenAndServe(":9999", nil); err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
 
 	//// === CAS ===
 	//url, _ := url.Parse(casURL)
 	//client := cas.NewClient(&cas.Options{URL: url})
 	//
-	//m := http.NewServeMux()
-	//m.HandleFunc("/foo", fooHandlerFunc)
-	//m.HandleFunc("/logout", fooHandlerFunc)
-	////m.Handle("/foo", middlewareLogger(http.HandlerFunc(fooHandlerFunc)))
-	////m.Handle("/logout", middlewareLogger(http.HandlerFunc(fooHandlerFunc)))
+	//mux := http.NewServeMux()
+	//mux.HandleFunc("/foo", fooHandlerFunc)
+	//mux.HandleFunc("/logout", fooHandlerFunc)
+	////mux.Handle("/foo", middlewareLogger(http.HandlerFunc(fooHandlerFunc)))
+	////mux.Handle("/logout", middlewareLogger(http.HandlerFunc(fooHandlerFunc)))
 	//
 	//server := &http.Server{
 	//	Addr:    ":9999",
-	//	Handler: client.Handle(middlewareLogger(m)),
+	//	Handler: client.Handle(middlewareLogger(mux)),
 	//}
 	//
 	////if err := server.ListenAndServeTLS("server.crt", "server.key"); err != nil {
@@ -72,22 +73,38 @@ func main() {
 	//	log.Infof("Error from HTTP Server: %v", err)
 	//}
 
-	// === Middleware CAS ===
-	m := http.NewServeMux()
-	m.HandleFunc("/foo", fooHandlerFunc)
-	m.HandleFunc("/bar", barHandlerFunc)
+	//// === Middleware CAS ===
+	//mux := http.NewServeMux()
+	//mux.HandleFunc("/foo", fooHandlerFunc)
+	//mux.HandleFunc("/bar", barHandlerFunc)
+	//
+	//server := &http.Server{
+	//	Addr:    ":9999",
+	//	Handler: middlewareCas(mux),
+	//}
+	//
+	////if err := server.ListenAndServeTLS("server.crt", "server.key"); err != nil {
+	//if err := server.ListenAndServe(); err != nil {
+	//	log.Infof("Error from HTTP Server: %v", err)
+	//}
+	//
+	//log.Info("=== Shutting down")
+}
 
-	server := &http.Server{
-		Addr:    ":9999",
-		Handler: middlewareCas(m),
+func now() string {
+	return time.Now().Format(time.Stamp) + " "
+}
+
+func middlewareSimple(f http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println(now() + "before")
+		defer fmt.Println(now() + "after")
+		f(w, r)
 	}
+}
 
-	//if err := server.ListenAndServeTLS("server.crt", "server.key"); err != nil {
-	if err := server.ListenAndServe(); err != nil {
-		log.Infof("Error from HTTP Server: %v", err)
-	}
-
-	log.Info("=== Shutting down")
+func handlerFunc(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("h4")
 }
 
 func middlewareCas(next http.Handler) http.Handler {
@@ -124,11 +141,11 @@ func casHandler(next http.Handler) http.Handler {
 
 			//// return json
 			w.Header().Set("Access-Control-Allow-Credentials", "true")
-			w.Header().Set("Access-Control-Allow-Headers", "Origin,Authorization,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Feedback-Type")
+			w.Header().Set("Access-Control-Allow-Headers", "Origin,Authorization,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Reply-Type")
 			w.Header().Set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
 			w.Header().Set("Access-Control-Allow-Origin", "*")
-			w.Header().Set("Access-Control-Expose-Headers", "Feedback-Length,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Feedback-Type")
-			w.Header().Set("Feedback-Type", "application/json")
+			w.Header().Set("Access-Control-Expose-Headers", "Reply-Length,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Reply-Type")
+			w.Header().Set("Reply-Type", "application/json")
 			w.WriteHeader(200)
 
 			str := fmt.Sprintf(`{"code": -1, "message": "not logged in!"}`)
@@ -153,11 +170,11 @@ func casHandler(next http.Handler) http.Handler {
 		// 处理 /currentuser 请求，并将 token 的获取也统一到该请求中
 		if r.URL.Path == "/currentuser" {
 			w.Header().Set("Access-Control-Allow-Credentials", "true")
-			w.Header().Set("Access-Control-Allow-Headers", "Origin,Authorization,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Feedback-Type")
+			w.Header().Set("Access-Control-Allow-Headers", "Origin,Authorization,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Reply-Type")
 			w.Header().Set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
 			w.Header().Set("Access-Control-Allow-Origin", "*")
-			w.Header().Set("Access-Control-Expose-Headers", "Feedback-Length,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Feedback-Type")
-			w.Header().Set("Feedback-Type", "application/json")
+			w.Header().Set("Access-Control-Expose-Headers", "Reply-Length,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Reply-Type")
+			w.Header().Set("Reply-Type", "application/json")
 			w.WriteHeader(200)
 
 			apiToken := "ttt"
@@ -176,7 +193,7 @@ func casHandler(next http.Handler) http.Handler {
 
 func fooHandlerFunc(w http.ResponseWriter, r *http.Request) {
 	log.Info("=== fooHandlerFunc...")
-	w.Header().Add("Feedback-Type", "text/html")
+	w.Header().Add("Reply-Type", "text/html")
 
 	tmpl, err := template.New("index.html").Parse(index_html)
 
