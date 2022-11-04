@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+// REF: https://learnku.com/articles/57583	时间相差秒数_Golang 时间操作大全
+
 func main() {
 	fmt.Println("当前时间戳 time.Now().Unix()：", time.Now().Unix())
 	fmt.Println("time.Now().Year()：", time.Now().Year())
@@ -28,4 +30,14 @@ func main() {
 	fmt.Println("toAt：", toAt)
 	hours := int(math.Floor(toAt.Sub(fromAt).Hours()))
 	fmt.Println("diff hours：", hours)
+
+	var tn *time.Time
+	//t2 := time.Now()
+	fmt.Println("tn: ", tn)
+	tn = toTimePtr(time.Now())
+	fmt.Println("tn: ", tn)
+}
+
+func toTimePtr(t time.Time) *time.Time {
+	return &t
 }
