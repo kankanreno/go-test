@@ -4,13 +4,17 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"sync"
 	"time"
 )
 
+// REF: https://zhuanlan.zhihu.com/p/442534091
+var wg sync.WaitGroup
 var db *sql.DB
 
 func initDB() (err error) {
 	dsn := "test_check:Renkankan@2020@tcp(10.119.0.254:3306)/zhdj?charset=utf8mb4&parseTime=True"
+	//dsn := "zhdj:95CED76469FEA636@tcp(192.168.2.129:3306)/zhdj?charset=utf8mb4&parseTime=True"
 	db, err = sql.Open("mysql", dsn)
 	if err != nil {
 		print(err.Error())
@@ -58,6 +62,8 @@ func listCode() []string {
 }
 
 func setNum(codes []string) {
+	defer wg.Done()
+	fmt.Printf("=== 处理 codes: %v\n", codes)
 	for _, code := range codes {
 		// 查询人数
 		var num int
@@ -67,7 +73,7 @@ func setNum(codes []string) {
 				UNION ALL
 				SELECT b.*, _b.child_code, _b.child_name, _b.child_deletedTime, _b.child_type FROM _branch _b INNER JOIN branch b ON _b.parent_code = b.code
 			)
-			
+	
 			SELECT COUNT(vmm.guid)
 			FROM _branch _b
 					 LEFT JOIN VIEW_MISC_MEMBER vmm ON _b.child_code = vmm.branch_code AND vmm.m_status IN (0, 1, 3)
@@ -97,8 +103,14 @@ func main() {
 
 	// 获取所有支部code
 	codes := listCode()
-	fmt.Printf("=== codes: %v\n", codes)
 
 	// 设置支部人数
-	setNum(codes)
+	wg.Add(1)
+	go setNum(codes[:len(codes)/2])
+
+	wg.Add(1)
+	go setNum(codes[len(codes)/2:])
+
+	wg.Wait()
+	fmt.Printf("=== main 结束")
 }
