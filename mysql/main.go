@@ -4,12 +4,15 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/schollz/progressbar/v3"
+	"os"
 	"sync"
 	"time"
 )
 
 var wg sync.WaitGroup
 var db *sql.DB
+var bar *progressbar.ProgressBar
 
 func initDB() (err error) {
 	//dsn := "test_check:Renkankan@2020@tcp(10.119.0.254:3306)/zhdj?charset=utf8mb4&parseTime=True"
@@ -93,7 +96,10 @@ func setNum(codes []string) {
 			fmt.Printf("=== 更新失败, err: %s\n", err.Error())
 			return
 		}
-		fmt.Printf("=== 更新成功, code: %s, num: %d\n", code, num)
+		//fmt.Printf("=== 更新成功, code: %s, num: %d\n", code, num)
+
+		// update progressbar
+		bar.Add(1)
 	}
 }
 
@@ -106,6 +112,21 @@ func main() {
 	// 获取所有支部code
 	codes := listCode()
 	//codes := []string{"1111", "2222", "3333", "4444", "5555", "6666", "7777"}
+
+	// 初始化 progressbar
+	bar = progressbar.NewOptions(len(codes),
+		progressbar.OptionSetDescription("Done"),
+		progressbar.OptionSetWriter(os.Stderr),
+		progressbar.OptionSetWidth(50),
+		progressbar.OptionThrottle(65*time.Millisecond),
+		progressbar.OptionShowCount(),
+		progressbar.OptionShowIts(),
+		progressbar.OptionOnCompletion(func() {
+			fmt.Fprint(os.Stderr, "\n")
+		}),
+		progressbar.OptionSpinnerType(14),
+		progressbar.OptionSetRenderBlankState(true),
+	)
 
 	// 设置支部人数
 	for i := 0; i < GO_NUM; i++ {
