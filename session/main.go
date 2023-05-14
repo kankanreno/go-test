@@ -11,6 +11,8 @@ import (
 	"time"
 )
 
+// REF: https://xie.infoq.cn/article/53d671122ad09f97080fdab35		「Go 工具箱」gorilla/sessions 包的使用及原理分析
+
 // 存储所有用户的session数据
 var SessionMap map[string]*sessions.Session
 
