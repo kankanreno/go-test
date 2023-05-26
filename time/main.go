@@ -19,13 +19,13 @@ func main() {
 	fmt.Println("time.Now().Weekday()：", int(time.Now().Weekday()))
 	fmt.Println()
 
-	str := "2019-07-07 08:05:02"
+	str := "2019-07-08 09:05:02"
 	t, _ := time.Parse("2006-01-02 15:04:05", str)
 	fmt.Printf("解析时间 Parse %s：%v\n", str, t)
 	fmt.Println()
 
-	fmt.Println("格式化显示当前时间: ", time.Now().Format("2006-01-02 03:04:05"))
-	fmt.Printf("格式化显示指定时间, t: %s, v: %s\n", str, t.Format("2006-1-2 3:4:5"))
+	fmt.Println("格式化显示当前时间: ", time.Now().Format("2006-01-02 15:04:05"))
+	fmt.Printf("格式化显示指定时间, t: %s, v: %s\n", str, fmt.Sprintf("0 %d %d %d %d *", t.Minute(), t.Hour(), t.Day(), t.Month()))
 	fmt.Println("time.Now().Weekday()：", t.Weekday())
 	fmt.Println("time.Now().Weekday()：", int(t.Weekday()))
 	fullTimeStr := time.Now().Format("20060102150405.000")
