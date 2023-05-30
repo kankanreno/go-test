@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/sirupsen/logrus"
+	"fmt"
 	"reflect"
 )
 
@@ -25,14 +25,13 @@ import (
 //	fmt.Println(s.String())
 //}
 
-
 type User struct {
-	ID uint
-	Name string
-	Pass string
+	ID     uint
+	Name   string
+	Pass   string
 	Status int
 }
 
 func main() {
-	logrus.Infof("=== %s", reflect.TypeOf(&User{}).Elem().Name())
+	fmt.Printf("=== %s", reflect.TypeOf(&User{}).Elem().Name())
 }
