@@ -2,26 +2,28 @@ package main
 
 import (
 	"fmt"
-	"time"
 )
 
 func main() {
 
 	////// 随机性测试
-	//ch1 := make(chan int, 1)
-	//ch2 := make(chan int, 1)
-	//ch1 <- 1
-	//ch2 <- 2
-	//foo := 0
-	//
-	//select {
-	//case foo = <-ch1:
-	//	fmt.Println("ch1 get success: ", foo)
-	//case foo = <-ch2:
-	//	fmt.Println("ch2 get success: ", foo)
-	//default:
-	//	fmt.Println("default")
-	//}
+	ch1 := make(chan int, 1)
+	ch2 := make(chan int, 1)
+	ch1 <- 1
+	ch2 <- 2
+	foo := 0
+
+	for {
+		select {
+		case foo = <-ch1:
+			fmt.Println("ch1 get success: ", foo)
+		case foo = <-ch2:
+			fmt.Println("ch2 get success: ", foo)
+		default:
+			fmt.Println("default")
+			return
+		}
+	}
 
 	////// 超时判断
 	//ch := make(chan int)
@@ -61,15 +63,15 @@ func main() {
 	//}
 
 	////// 退出
-	shouldQuit := make(chan struct{})
-
-	go func() {
-		time.Sleep(3 * time.Second)
-		close(shouldQuit)
-	}()
-
-    select {
-    case <-shouldQuit:
-        fmt.Println("quited!")
-	}
+	//shouldQuit := make(chan struct{})
+	//
+	//go func() {
+	//	time.Sleep(3 * time.Second)
+	//	close(shouldQuit)
+	//}()
+	//
+	//select {
+	//case <-shouldQuit:
+	//	fmt.Println("quited!")
+	//}
 }
