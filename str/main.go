@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/dablelv/go-huge-util/conv"
-	"github.com/dablelv/go-huge-util/slice"
+	"github.com/dablelv/cyan/conv"
+	"github.com/dablelv/cyan/str"
 	"regexp"
 )
 
@@ -19,7 +19,7 @@ func pruneYearSpec(yearSpec string) string {
 	}
 	fmt.Println("ints: ", ints)
 
-	prunedYearSpec, _ := slice.JoinWithSepE(ints, ",")
+	prunedYearSpec := str.Join(ints, ",")
 	return prunedYearSpec
 }
 

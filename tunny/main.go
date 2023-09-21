@@ -8,7 +8,7 @@ import (
 
 //func main() {
 //	numCPUs := runtime.NumCPU()
-//	pool := tunny.NewFunc(numCPUs, func(payload interface{}) interface{} {
+//	pool := tunny.NewFunc(numCPUs, func(payload any) any {
 //		var result []byte
 //
 //		// TODO: Something CPU heavy with payload
@@ -41,7 +41,7 @@ func main() {
 	numCPUs := runtime.NumCPU()
 	pool := tunny.NewCallback(numCPUs)
 
-	printHello := func(str interface{}) interface{} {
+	printHello := func(str any) any {
 		fmt.Println("Hello!", str)
 		return "Hello! " + str.(string)
 	}
@@ -49,10 +49,10 @@ func main() {
 }
 
 //type myWorker struct {
-//	processor func(interface{}) interface{}
+//	processor func(any) any
 //}
 //
-//func (w *myWorker) Process(payload interface{}) interface{} {
+//func (w *myWorker) Process(payload any) any {
 //	return w.processor(payload)
 //}
 //
@@ -61,7 +61,7 @@ func main() {
 //func (w *myWorker) Terminate()       {}
 //
 //func main() {
-//	printHello := func(str interface{}) interface{} {
+//	printHello := func(str any) any {
 //		fmt.Println("Hello!", str)
 //		return "Hello! " + str.(string)
 //	}

@@ -15,8 +15,7 @@ var db *sql.DB
 var bar *progressbar.ProgressBar
 
 func initDB() (err error) {
-	//dsn := "test_check:Renkankan@2020@tcp(10.119.0.254:3306)/zhdj?charset=utf8mb4&parseTime=True"
-	dsn := "zhdj:95CED76469FEA636@tcp(192.168.2.129:3306)/zhdj?charset=utf8mb4&parseTime=True"
+	dsn := "root:Kankan.123@tcp(47.98.63.198:3306)/bb?charset=utf8mb4&parseTime=True"
 	db, err = sql.Open("mysql", dsn)
 	if err != nil {
 		print(err.Error())
