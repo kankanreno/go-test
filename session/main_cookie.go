@@ -8,8 +8,10 @@ import (
 	"net/http"
 )
 
+// REF: https://xie.infoq.cn/article/53d671122ad09f97080fdab35		「Go 工具箱」gorilla/sessions 包的使用及原理分析
+
 // custom session stores
-var store = sessions.NewFilesystemStore("./", securecookie.GenerateRandomKey(32))
+var store = sessions.NewCookieStore(securecookie.GenerateRandomKey(32), securecookie.GenerateRandomKey(32))
 
 func set(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "session_id")
@@ -29,16 +31,7 @@ func read(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	m := http.NewServeMux()
-	m.HandleFunc("/set", set)
-	m.HandleFunc("/read", read)
-
-	server := &http.Server{
-		Addr:    ":9999",
-		Handler: m,
-	}
-
-	if err := server.ListenAndServe(); err != nil {
-		log.Printf("Error from HTTP Server: %v", err)
-	}
+	http.HandleFunc("/set", set)
+	http.HandleFunc("/read", read)
+	log.Fatal(http.ListenAndServe(":9999", nil))
 }

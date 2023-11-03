@@ -16,12 +16,12 @@ import (
 )
 
 const (
-	authURL   = "http://localhost:9096/oauth2/authorize"
-	tokenURL  = "http://localhost:9096/oauth2/token"
-	verifyURL = "http://localhost:9096/oauth2/verify"
-	//authURL   = "http://account.cangbai.vip/oauth2/authorize"
-	//tokenURL  = "http://account.cangbai.vip/oauth2/token"
-	//verifyURL = "http://account.cangbai.vip/oauth2/verify"
+	//authURL   = "http://localhost:9096/oauth2/authorize"
+	//tokenURL  = "http://localhost:9096/oauth2/token"
+	//verifyURL = "http://localhost:9096/oauth2/verify"
+	authURL   = "http://account.cangbai.vip/oauth2/authorize"
+	tokenURL  = "http://account.cangbai.vip/oauth2/token"
+	verifyURL = "http://account.cangbai.vip/oauth2/verify"
 )
 
 var (

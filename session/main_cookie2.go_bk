@@ -75,18 +75,9 @@ func read(w http.ResponseWriter, r *http.Request) {
 func main() {
 	SessionMap = make(map[string]*sessions.Session)
 
-	m := http.NewServeMux()
-	m.HandleFunc("/set", set)
-	m.HandleFunc("/read", read)
-
-	server := &http.Server{
-		Addr:    ":9999",
-		Handler: m,
-	}
-
-	if err := server.ListenAndServe(); err != nil {
-		log.Printf("Error from HTTP Server: %v", err)
-	}
+	http.HandleFunc("/set", set)
+	http.HandleFunc("/read", read)
+	log.Fatal(http.ListenAndServe(":9999", nil))
 }
 
 // 返回JSON结果
