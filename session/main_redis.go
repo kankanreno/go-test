@@ -2,14 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/gorilla/securecookie"
-	"github.com/gorilla/sessions"
+	"gopkg.in/boj/redistore.v1"
 	"log"
 	"net/http"
 )
 
-// custom session stores
-var store = sessions.NewFilesystemStore("./", securecookie.GenerateRandomKey(32))
+var store, _ = redistore.NewRediStoreWithDB(10, "tcp", "47.94.212.166:6379", "Cangbai.123", "14", []byte("secret-key"))
 
 func set(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "session_id")

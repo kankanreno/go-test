@@ -34,8 +34,8 @@ func set(w http.ResponseWriter, r *http.Request) {
 			Values: make(map[any]any),
 		}
 	}
-	session.Values["account"] = "kankan"
 	session.Values["name"] = "看看"
+	session.Values["account"] = "kankan"
 
 	// session add to sessionMap
 	SessionMap[sessionId] = session
@@ -69,7 +69,7 @@ func read(w http.ResponseWriter, r *http.Request) {
 		jsonErrorHandler(w, 1, "session 不存在", nil)
 		return
 	}
-	fmt.Fprintf(w, "account: %s, name: %s", session.Values["account"], session.Values["name"])
+	fmt.Fprintf(w, "name: %s, account: %s", session.Values["name"], session.Values["account"])
 }
 
 func main() {
