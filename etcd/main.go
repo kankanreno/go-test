@@ -3,23 +3,22 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/coreos/etcd/clientv3"
-	"github.com/coreos/etcd/pkg/transport"
+	clientv3 "go.etcd.io/etcd/client/v3"
 	"time"
 )
 
+// https://etcd.io/docs/v3.5/
 func main() {
-	tlsInfo := transport.TLSInfo{
-		CertFile:      `client.pem`,
-		KeyFile:       `client-key.pem`,
-		TrustedCAFile: `ca.pem`,
-	}
-	config, err := tlsInfo.ClientConfig()
+	//config := tls.Config{
+	//	CertFile:      `client.pem`,
+	//	KeyFile:       `client-key.pem`,
+	//	TrustedCAFile: `ca.pem`,
+	//}
 
 	cli, err := clientv3.New(clientv3.Config{
 		Endpoints:   []string{"https://172.20.10.12:2379"},
 		DialTimeout: 3 * time.Second,
-		TLS:         config,
+		//TLS:         &config,
 	})
 	if err != nil {
 		panic(fmt.Sprintf("connect etcd err: %v", err))
