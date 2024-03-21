@@ -51,7 +51,6 @@ func (hub *Hub) send(message []byte, ignore *Client) {
 	}
 }
 
-
 // === Client ===
 type Client struct {
 	id     string
@@ -64,6 +63,7 @@ func (c *Client) read() {
 		hub.unRegister <- c
 		c.socket.Close()
 	}()
+
 	for {
 		_, message, err := c.socket.ReadMessage()
 		if err != nil {
@@ -85,6 +85,7 @@ func (c *Client) write() {
 	defer func() {
 		c.socket.Close()
 	}()
+
 	for {
 		select {
 		case message, ok := <-c.send:
@@ -109,7 +110,6 @@ var hub = Hub{
 	unRegister: make(chan *Client),
 	clients:    make(map[*Client]bool),
 }
-
 
 func main() {
 	fmt.Println("Starting application...")
