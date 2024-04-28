@@ -16,19 +16,19 @@ import (
 )
 
 const (
-	//authURL   = "http://localhost:9096/oauth2/authorize"
-	//tokenURL  = "http://localhost:9096/oauth2/token"
-	//verifyURL = "http://localhost:9096/oauth2/verify"
-	authURL   = "http://account.cangbai.vip/oauth2/authorize"
-	tokenURL  = "http://account.cangbai.vip/oauth2/token"
-	verifyURL = "http://account.cangbai.vip/oauth2/verify"
+	authURL   = "http://localhost:9096/oauth2/authorize"
+	tokenURL  = "http://localhost:9096/oauth2/token"
+	verifyURL = "http://localhost:9096/oauth2/verify"
+	//authURL   = "http://account.cangbai.vip/oauth2/authorize"
+	//tokenURL  = "http://account.cangbai.vip/oauth2/token"
+	//verifyURL = "http://account.cangbai.vip/oauth2/verify"
 )
 
 var (
 	oauth2Config = oauth2.Config{
-		ClientID:     "d31f0811",
-		ClientSecret: "fbbf4493da794f45",
-		Scopes:       []string{"all"},
+		ClientID:     "beaver_client_id",
+		ClientSecret: "beaver_client_secret",
+		Scopes:       []string{"a,b,c"},
 		RedirectURL:  "http://localhost:9094/token",
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  authURL,

@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
+	"go-test/oauth2-server/server"
 	"net/http"
-	"oauth_demo/server"
 )
 
 func main() {

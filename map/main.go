@@ -51,16 +51,22 @@ import "fmt"
 // https://studygolang.com/articles/10511
 
 func main() {
-	m := map[string][]string{"cn": {"看看"}, "mail": {"kankan@pa.com"}, "mobile": {"18352515222"}}
-	m2 := map[string]string{"cn": "看看", "mail": "kankan@pa.com", "mobile": "18352515222"}
+	m := map[string][]string{"name": {"看看"}, "mail": {"kankan@pa.com"}, "phone": {"18352515222"}}
+	m2 := map[string]string{"name": "看看", "mail": "kankan@pa.com", "phone": "18352515222"}
 
 	// m
 	fmt.Println("m: ", m)
-	fmt.Println("cn: ", m["cn"][0])
-	//fmt.Println("cn: ", m["cn2"][0])
+	fmt.Println("name: ", m["name"][0])
+	//fmt.Println("name: ", m["name2"][0])
 
 	// m2
 	fmt.Println("m: ", m2)
-	fmt.Println("cn: ", m2["cn"])
-	fmt.Println("cn: ", m2["cn2"])
+	fmt.Println("name: ", m2["name"])
+	fmt.Println("name2: ", m2["name2"])
+
+	m2["name"] = ""
+	fmt.Printf("m2: %+v\n", m2)
+
+	delete(m2, "name")
+	fmt.Printf("m2: %+v\n", m2)
 }
