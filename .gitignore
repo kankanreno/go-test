@@ -4,6 +4,3 @@
 .DS_Store
 
 _out
-conf.yaml
-go.mod
-go.sum
