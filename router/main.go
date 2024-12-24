@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 )
@@ -39,6 +40,23 @@ func (r *Router) HandleFunc(method, path string, f http.HandlerFunc) {
 
 func main() {
 	r := NewRouter()
+
+	r.HandleFunc("POST", "/upload_group", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Printf("=== r:\n%+v\n", r)
+
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, "Error reading request body", http.StatusBadRequest)
+			return
+		}
+		defer r.Body.Close()
+
+		fmt.Printf("=== r body:\n%s\n", string(body))
+
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprint(w, `{"code":"0000","message":"xxx","data":"0123456789"}`)
+	})
+
 	r.HandleFunc("GET", "/foo", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "FOO!")
 	})
@@ -47,5 +65,5 @@ func main() {
 		fmt.Fprint(w, "ROOT!")
 	})
 
-	http.ListenAndServe(":8080", r)
+	http.ListenAndServe(":8083", r)
 }
